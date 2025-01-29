@@ -13,6 +13,7 @@ def get_db():
     finally:
         db.close()
 
+
 @router.post("/register")
 def register(username: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
     hashed_pw = hash_password(password)
@@ -21,6 +22,7 @@ def register(username: str = Form(...), password: str = Form(...), db: Session =
     db.commit()
     db.refresh(user)
     return {"message": "User created successfully"}
+
 
 @router.post("/login")
 def login(username: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
