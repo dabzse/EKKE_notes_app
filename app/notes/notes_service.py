@@ -3,7 +3,10 @@ from sqlalchemy.orm import Session
 from ..database import SessionLocal
 from ..auth.auth_service import decode_access_token
 
+
 router = APIRouter()
+
+ERROR_401 = HTTPException(status_code=401, detail="Invalid token")
 
 def get_db():
     db = SessionLocal()
@@ -17,7 +20,7 @@ def get_db():
 def create_note(title: str, content: str, token: str, db: Session = Depends(get_db)):
     payload = decode_access_token(token)
     if not payload:
-        raise HTTPException(status_code=401, detail="Invalid token")
+        raise ERROR_401
     user_id = payload.get("sub")
     return create_note(db=db, title=title, content=content, user_id=user_id)
 
@@ -26,7 +29,7 @@ def create_note(title: str, content: str, token: str, db: Session = Depends(get_
 def get_notes(token: str, db: Session = Depends(get_db)):
     payload = decode_access_token(token)
     if not payload:
-        raise HTTPException(status_code=401, detail="Invalid token")
+        raise ERROR_401
     user_id = payload.get("sub")
     return get_notes(db=db, user_id=user_id)
 
@@ -35,7 +38,7 @@ def get_notes(token: str, db: Session = Depends(get_db)):
 def get_note_by_id(note_id: int, token: str, db: Session = Depends(get_db)):
     payload = decode_access_token(token)
     if not payload:
-        raise HTTPException(status_code=401, detail="Invalid token")
+        raise ERROR_401
     user_id = payload.get("sub")
     return get_note_by_id(db=db, note_id=note_id, user_id=user_id)
 
@@ -44,7 +47,7 @@ def get_note_by_id(note_id: int, token: str, db: Session = Depends(get_db)):
 def update_note(note_id: int, title: str, content: str, token: str, db: Session = Depends(get_db)):
     payload = decode_access_token(token)
     if not payload:
-        raise HTTPException(status_code=401, detail="Invalid token")
+        raise ERROR_401
     user_id = payload.get("sub")
     return update_note(db=db, note_id=note_id, title=title, content=content, user_id=user_id)
 
@@ -53,6 +56,6 @@ def update_note(note_id: int, title: str, content: str, token: str, db: Session 
 def delete_note(note_id: int, token: str, db: Session = Depends(get_db)):
     payload = decode_access_token(token)
     if not payload:
-        raise HTTPException(status_code=401, detail="Invalid token")
+        raise ERROR_401
     user_id = payload.get("sub")
     return delete_note(db=db, note_id=note_id, user_id=user_id)
