@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from ..database import SessionLocal
 from ..auth.auth_service import decode_access_token
-from ..notes.notes_service import create_note, get_notes, get_note_by_id, update_note, delete_note
 
 router = APIRouter()
 
@@ -15,7 +14,7 @@ def get_db():
 
 
 @router.post("/")
-def create_new_note(title: str, content: str, token: str, db: Session = Depends(get_db)):
+def create_note(title: str, content: str, token: str, db: Session = Depends(get_db)):
     payload = decode_access_token(token)
     if not payload:
         raise HTTPException(status_code=401, detail="Invalid token")
@@ -24,7 +23,7 @@ def create_new_note(title: str, content: str, token: str, db: Session = Depends(
 
 
 @router.get("/")
-def list_notes(token: str, db: Session = Depends(get_db)):
+def get_notes(token: str, db: Session = Depends(get_db)):
     payload = decode_access_token(token)
     if not payload:
         raise HTTPException(status_code=401, detail="Invalid token")
@@ -33,7 +32,7 @@ def list_notes(token: str, db: Session = Depends(get_db)):
 
 
 @router.get("/{note_id}")
-def retrieve_note(note_id: int, token: str, db: Session = Depends(get_db)):
+def get_note_by_id(note_id: int, token: str, db: Session = Depends(get_db)):
     payload = decode_access_token(token)
     if not payload:
         raise HTTPException(status_code=401, detail="Invalid token")
@@ -42,7 +41,7 @@ def retrieve_note(note_id: int, token: str, db: Session = Depends(get_db)):
 
 
 @router.put("/{note_id}")
-def update_existing_note(note_id: int, title: str, content: str, token: str, db: Session = Depends(get_db)):
+def update_note(note_id: int, title: str, content: str, token: str, db: Session = Depends(get_db)):
     payload = decode_access_token(token)
     if not payload:
         raise HTTPException(status_code=401, detail="Invalid token")
@@ -51,7 +50,7 @@ def update_existing_note(note_id: int, title: str, content: str, token: str, db:
 
 
 @router.delete("/{note_id}")
-def delete_existing_note(note_id: int, token: str, db: Session = Depends(get_db)):
+def delete_note(note_id: int, token: str, db: Session = Depends(get_db)):
     payload = decode_access_token(token)
     if not payload:
         raise HTTPException(status_code=401, detail="Invalid token")
