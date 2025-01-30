@@ -24,7 +24,10 @@ def get_notes(token: str, db: Session = Depends(get_db)):
     if not payload:
         raise ERROR_401
     user_id = payload.get("sub")
-    return get_notes_crud(db=db, user_id=user_id)
+    notes = get_notes_crud(db=db, user_id=user_id)
+    if not notes:
+        print(f"No notes found for user_id: {user_id}")
+    return notes
 
 
 @router.get("/{note_id}")

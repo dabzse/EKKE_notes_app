@@ -22,6 +22,10 @@ class NoteInDB(NoteBase):
         from_attributes = True
 
 
+class Note(NoteInDB):
+    pass
+
+
 class UserBase(BaseModel):
     username: str
 
