@@ -10,7 +10,7 @@
 
     <script>
         async function login(event) {
-            event.preventDefault();  // Prevent the default form submission
+            event.preventDefault();  // prevent the default form submission
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const response = await fetch('/auth/login', {
@@ -22,12 +22,18 @@
             });
             const data = await response.json();
             if (response.ok) {
-                localStorage.setItem('token', data.token);  // Store the token in localStorage
-                window.location.href = '/notes';  // Redirect to the notes page
-            } else {
+                localStorage.setItem('token', data.access_token);  // store the token in localStorage
+                window.location.href = '/notes';  // redirect to the notes page
+            }
+            else {
                 alert('Login failed: ' + JSON.stringify(data.detail));
             }
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.querySelector('form');
+            loginForm.addEventListener('submit', login);
+        });
     </script>
 
 </head>
@@ -35,7 +41,7 @@
     <div class="d-flex justify-content-center align-items-center vh-100">
         <div class="card p-4">
             <h2 class="text-center mb-4">NotesAPP::Login</h2>
-            <form onsubmit="login(event)">
+            <form>
                 <div class="mb-3">
                     <label for="username" class="form-label">username</label>
                     <input type="text" id="username" name="username" class="form-control" placeholder="Enter your username" required>
@@ -44,7 +50,7 @@
                     <label for="password" class="form-label">password</label>
                     <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
                 </div>
-                <button type="submit" class="btn btn-primary w-100">Login</button>
+                <button type="submit" class="btn btn-primary w-100">GO!</button>
             </form>
         </div>
     </div>

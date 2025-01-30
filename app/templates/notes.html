@@ -1,47 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Notes</title>
-    <script>
-        async function fetchNotes() {
-            const response = await fetch('/notes', {
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('token')
-                }
-            });
-            const notes = await response.json();
-            const notesList = document.getElementById('notes-list');
-            notesList.innerHTML = '';
-            notes.forEach(note => {
-                const li = document.createElement('li');
-                li.textContent = note.title + ': ' + note.content;
-                notesList.appendChild(li);
-            });
-        }
-
-        async function createNote() {
-            const title = document.getElementById('title').value;
-            const content = document.getElementById('content').value;
-            await fetch('/notes', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem('token')
-                },
-                body: JSON.stringify({ title, content })
-            });
-            fetchNotes();
-        }
-
-        window.onload = fetchNotes;
-    </script>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="@dabzse">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <title>NotesAPP::Notes</title>
 </head>
 <body>
-    <h1>Notes</h1>
-    <ul id="notes-list"></ul>
-    <h2>Create Note</h2>
-    <input type="text" id="title" placeholder="Title">
-    <input type="text" id="content" placeholder="Content">
-    <button onclick="createNote()">Create</button>
+    <div class="container mt-5">
+        <h1 class="text-center">Your Notes</h1>
+        <div id="notes-list" class="mt-4">
+            <!-- Notes will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <script>
+        async function fetchNotes() {
+            const token = localStorage.getItem('token');
+            const response = await fetch('/notes', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if (response.ok) {
+                const notes = await response.json();
+                const notesList = document.getElementById('notes-list');
+                notesList.innerHTML = '';
+                notes.forEach(note => {
+                    const noteElement = document.createElement('div');
+                    noteElement.className = 'card mb-3';
+                    noteElement.innerHTML = `
+                        <div class="card-body">
+                            <h5 class="card-title">${note.title}</h5>
+                            <p class="card-text">${note.content}</p>
+                        </div>
+                    `;
+                    notesList.appendChild(noteElement);
+                });
+            } else {
+                console.error('Failed to fetch notes:', response.statusText);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchNotes);
+    </script>
+    <script src="/static/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
