@@ -1,11 +1,12 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from app.database import init_db
 from app.auth.auth_routes import router as auth_router
-from app.notes.notes_routes import router as notes_router
+from app.notes.notes_routes import router as notes_router, get_current_user
+from app.models import User
 
 app = FastAPI(
     title="FastAPI Course :: EKKE: LBT_IM738G2",
@@ -32,14 +33,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
 app.include_router(auth_router, prefix="/auth", tags=["Auth"])
 app.include_router(notes_router, prefix="/notes", tags=["Notes"])
 
-
 @app.get("/")
 async def index(request: Request):
-    return templates.TemplateResponse("multiform.html", {"request": request})
+    return templates.TemplateResponse("login.html", {"request": request})
+
+
+@app.get("/notes")
+def read_notes_page(request: Request, user: User = Depends(get_current_user)):
+    return templates.TemplateResponse("notes.html", {"request": request})

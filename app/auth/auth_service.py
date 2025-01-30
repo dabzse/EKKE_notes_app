@@ -2,6 +2,10 @@ from datetime import datetime, timedelta, timezone
 
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+from sqlalchemy.orm import Session
+
+from app.crud import get_user
+from app.models import User
 
 """
 to get a SECRET_KEY string, run:
@@ -19,6 +23,13 @@ def hash_password(password: str):
 
 def verify_password(plain_password: str, hashed_password: str):
     return pwd_context.verify(plain_password, hashed_password)
+
+
+def authenticate_user(db: Session, username: str, password: str) -> User:
+    user = get_user(db, username)
+    if not user or not verify_password(password, user.hashed_password):
+        return None
+    return user
 
 
 def create_access_token(payload: dict):

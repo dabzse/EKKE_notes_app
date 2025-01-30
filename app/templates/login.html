@@ -1,17 +1,53 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Login</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="@dabzse">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <title>NotesAPP::Login</title>
+
+    <script>
+        async function login(event) {
+            event.preventDefault();  // Prevent the default form submission
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const response = await fetch('/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await response.json();
+            if (response.ok) {
+                localStorage.setItem('token', data.token);  // Store the token in localStorage
+                window.location.href = '/notes';  // Redirect to the notes page
+            } else {
+                alert('Login failed: ' + JSON.stringify(data.detail));
+            }
+        }
+    </script>
+
 </head>
 <body>
-    <h1>Login</h1>
-    <form action="/login" method="post">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required><br><br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br><br>
-        <button type="submit">Login</button>
-    </form>
+    <div class="d-flex justify-content-center align-items-center vh-100">
+        <div class="card p-4">
+            <h2 class="text-center mb-4">NotesAPP::Login</h2>
+            <form onsubmit="login(event)">
+                <div class="mb-3">
+                    <label for="username" class="form-label">username</label>
+                    <input type="text" id="username" name="username" class="form-control" placeholder="Enter your username" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">password</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Login</button>
+            </form>
+        </div>
+    </div>
+    <script src="/static/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

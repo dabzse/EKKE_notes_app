@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Notes</title>
+    <script>
+        async function fetchNotes() {
+            const response = await fetch('/notes', {
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                }
+            });
+            const notes = await response.json();
+            const notesList = document.getElementById('notes-list');
+            notesList.innerHTML = '';
+            notes.forEach(note => {
+                const li = document.createElement('li');
+                li.textContent = note.title + ': ' + note.content;
+                notesList.appendChild(li);
+            });
+        }
+
+        async function createNote() {
+            const title = document.getElementById('title').value;
+            const content = document.getElementById('content').value;
+            await fetch('/notes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                },
+                body: JSON.stringify({ title, content })
+            });
+            fetchNotes();
+        }
+
+        window.onload = fetchNotes;
+    </script>
+</head>
+<body>
+    <h1>Notes</h1>
+    <ul id="notes-list"></ul>
+    <h2>Create Note</h2>
+    <input type="text" id="title" placeholder="Title">
+    <input type="text" id="content" placeholder="Content">
+    <button onclick="createNote()">Create</button>
+</body>
+</html>

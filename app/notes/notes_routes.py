@@ -1,19 +1,35 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.auth.auth_service import decode_access_token
-from app.crud import(
+from app.crud import (
     create_note as create_note_crud,
     get_notes as get_notes_crud,
     get_note_by_id as get_note_by_id_crud,
     update_note as update_note_crud,
     delete_note as delete_note_crud,
 )
-
+from app.models import User
 
 router = APIRouter()
 
 ERROR_401 = HTTPException(status_code=401, detail="Invalid token")
+
+
+def get_current_user(request: Request, db: Session = Depends(get_db)):
+    token = request.headers.get("Authorization")
+    if not token:
+        raise HTTPException(status_code=401, detail="Token missing")
+    token = token.split(" ")[1]  # assuming the token is in the format "Bearer <token>"
+    payload = decode_access_token(token)
+    if not payload:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    username = payload.get("sub")
+    user = db.query(User).filter(User.username == username).first()
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    return user
+
 
 @router.post("/notes")
 def create_note(title: str, content: str, token: str, db: Session = Depends(get_db)):
@@ -25,12 +41,9 @@ def create_note(title: str, content: str, token: str, db: Session = Depends(get_
 
 
 @router.get("/notes")
-def get_notes(token: str, db: Session = Depends(get_db)):
-    payload = decode_access_token(token)
-    if not payload:
-        raise ERROR_401
-    owner = payload.get("sub")
-    return get_notes_crud(db=db, owner=owner)
+def get_notes(request: Request, db: Session = Depends(get_db)):
+    user = get_current_user(request, db)
+    return get_notes_crud(db=db, owner=user.username)
 
 
 @router.get("/notes/{note_id}")
