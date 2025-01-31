@@ -42,3 +42,8 @@ app.include_router(notes_router, tags=["Notes"])
 @app.get("/")
 async def index(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
+
+
+@app.get("/register")
+async def index(request: Request):
+    return templates.TemplateResponse("register.html", {"request": request})

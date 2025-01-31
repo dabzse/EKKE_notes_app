@@ -17,13 +17,21 @@ class LoginRequest(BaseModel):
     username: str
     password: str
 
+class RegisterRequest(BaseModel):
+    username: str
+    password: str
 
 router = APIRouter()
 
+
 @router.post("/register")
-def register(username: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
-    hashed_pw = hash_password(password)
-    user = User(username=username, hashed_password=hashed_pw)
+def register(request: RegisterRequest, db: Session = Depends(get_db)):
+    existing_user = get_user(db, username=request.username)
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Username already taken")
+
+    hashed_pw = hash_password(request.password)
+    user = User(username=request.username, hashed_password=hashed_pw)
     db.add(user)
     db.commit()
     db.refresh(user)

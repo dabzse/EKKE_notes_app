@@ -37,11 +37,11 @@
     </script>
 
 </head>
-<body>
+<body class="bg-secondary">
     <div class="d-flex justify-content-center align-items-center vh-100">
-        <div class="card p-4">
+        <div class="card p-4" style="background-color: #cdcdcd; border-radius: 10px; border: 4px solid #1982e4;">
             <h2 class="text-center mb-4">NotesAPP::Login</h2>
-            <form>
+            <form class="d-flex flex-column" id="login-form" method="POST">
                 <div class="mb-3">
                     <label for="username" class="form-label">username</label>
                     <input type="text" id="username" name="username" class="form-control" placeholder="Enter your username" required>
@@ -49,6 +49,9 @@
                 <div class="mb-3">
                     <label for="password" class="form-label">password</label>
                     <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
+                </div>
+                <div class="mb-3 bg-info p-2 text-center">
+                    <a class="text-black" href="/register">Don't have an account? Register here</a>
                 </div>
                 <button type="submit" class="btn btn-primary w-100">GO!</button>
             </form>
