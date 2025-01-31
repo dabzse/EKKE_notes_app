@@ -42,4 +42,15 @@ class UserInDB(UserBase):
 
 
 class Token(BaseModel):
-    token: str
+    access_token: str
+    token_type: str
+
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+
+class RegisterRequest(BaseModel):
+    username: str
+    password: str

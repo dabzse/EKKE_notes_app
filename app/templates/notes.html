@@ -19,33 +19,34 @@
     <script>
         async function fetchNotes() {
             const token = localStorage.getItem('token');
+            console.log("Token from local storage:", token);
+            if (!token) {
+                alert('No token found, please login first');
+                window.location.href = '/login';
+                return;
+            }
+
             const response = await fetch('/notes', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
+
             if (response.ok) {
                 const notes = await response.json();
-                const notesList = document.getElementById('notes-list');
-                notesList.innerHTML = '';
-                notes.forEach(note => {
-                    const noteElement = document.createElement('div');
-                    noteElement.className = 'card mb-3';
-                    noteElement.innerHTML = `
-                        <div class="card-body">
-                            <h5 class="card-title">${note.title}</h5>
-                            <p class="card-text">${note.content}</p>
-                        </div>
-                    `;
-                    notesList.appendChild(noteElement);
-                });
+                console.log("Fetched notes:", notes);
+                // process and display notes
             } else {
                 console.error('Failed to fetch notes:', response.statusText);
+                alert('Failed to fetch notes: ' + response.statusText);
             }
         }
 
-        document.addEventListener('DOMContentLoaded', fetchNotes);
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("DOM fully loaded and parsed");
+            fetchNotes();
+        });
     </script>
     <script src="/static/js/bootstrap.bundle.min.js"></script>
 </body>
