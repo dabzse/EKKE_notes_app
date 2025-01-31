@@ -58,7 +58,7 @@ async def create_note(title: str, content: str, token: str, db: Session = Depend
 
 
 @router.get("/notes", response_class=HTMLResponse)
-async def get_notes(request: Request, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def get_notes(request: Request, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     notes = get_notes_service(db, current_user.username)
     return templates.TemplateResponse("notes.html", {"request": request, "notes": notes})
 
@@ -70,6 +70,21 @@ def get_note_by_id(note_id: int, token: str, db: Session = Depends(get_db)):
         raise ERROR_401
     owner = payload.get("sub")
     return get_note_by_id_service(db=db, note_id=note_id, owner=owner)
+
+
+'''
+this will give you an error because of the current_user dependency:
+    the issue might be that the token is not being properly decoded or validated
+
+I looked after the error and I didn't find the correct answer
+
+@router.get("/notes/{note_id}")
+def get_note_by_id(note_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    note = get_note_by_id_service(db=db, note_id=note_id, owner=current_user.username)
+    if not note:
+        raise HTTPException(status_code=404, detail="Note not found")
+    return note
+'''
 
 
 @router.put("/notes/{note_id}")
